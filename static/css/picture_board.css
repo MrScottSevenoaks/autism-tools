@@ -1,24 +1,151 @@
 /* static/css/picture_board.css */
+
+.board-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.tile {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1 / 1; /* Keeps tiles square */
+}
+
+
+
+.tile:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.tile .emoji {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.tile .label {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #eee;
+}
+
+.tile-wrapper {
+  position: relative;
+}
+
+@media (max-width: 600px) {
+  .board-container {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.75rem;
+  }
+  .tile {
+    padding: 0.8rem;
+  }
+}
+
+.pb-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+@media (min-width: 900px){
+  .pb-grid{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* tile wrapper provides positioning context for the X */
+.pb-tile{
+  position: relative;
+}
+
+
+.pb-speak:active{
+  transform: translate(1px, 1px);
+}
+
+
+.pb-tile .pb-icon{
+  font-size: clamp(100px, 6vw, 96px);
+  line-height: 1;
+  padding: 5px;
+}
+
+.pb-label{
+  font-size: 24px;
+  line-height: 1.1;
+  color: #000;
+}
+
+/* the delete X overlaid in the corner */
+.pb-remove{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+
+  width: 28px;
+  height: 28px;
+  padding: 0;
+
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pb-remove:hover{
+  background: #fff;
+}
+
+.pb-remove:active{
+  transform: translate(1px, 1px);
+}
+
+.pb-remove:focus-visible{
+  outline: 2px solid rgba(13,110,253,.75);
+  outline-offset: 2px;
+}
+/* static/css/picture_board.css */
 /* High-specificity rules to prevent Bootstrap/other CSS from overriding layout */
 
 #board{
   width: 100%;
 }
 
-/* Force a proper multi-column layout */
-#board .pb-grid{
-  width: 100%;
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
-  gap: 14px !important;
-  align-items: stretch;
-}
 
-/* Tile wrapper provides positioning context for the X */
-#board .pb-tile{
-  position: relative !important;
-  width: 100%;
-}
 
 /* The big clickable face of each tile */
 #board .pb-speak{
@@ -32,8 +159,8 @@
   gap: 10px;
 
   background: #e9e9e9;
-  border: 3px solid #2d2d2d;
-  box-shadow: 5px 5px 0 #111;
+  border-radius: 12px;
+
 
   cursor: pointer;
 
@@ -46,13 +173,9 @@
 /* Press effect */
 #board .pb-speak:active{
   transform: translate(1px, 1px);
-  box-shadow: 4px 4px 0 #111;
+
 }
 
-#board .pb-icon{
-  font-size: 30px;
-  line-height: 1;
-}
 
 #board .pb-label{
   font-size: 24px;
@@ -60,40 +183,6 @@
   color: #000;
 }
 
-/* The delete X: ACTUAL overlay inside the tile (not in layout flow) */
-#board .pb-remove{
-  position: absolute !important;
-  top: 8px !important;
-  right: 8px !important;
-  z-index: 10 !important;
 
-  width: 28px !important;
-  height: 28px !important;
-  padding: 0 !important;
 
-  display: grid !important;
-  place-items: center !important;
 
-  border-radius: 999px !important;
-  border: 2px solid #2d2d2d !important;
-  background: rgba(255,255,255,0.92) !important;
-
-  font-size: 18px !important;
-  line-height: 1 !important;
-
-  cursor: pointer !important;
-
-  /* Reset default button chrome */
-  appearance: none;
-  -webkit-appearance: none;
-  font: inherit;
-}
-
-#board .pb-remove:hover{
-  background: #fff !important;
-}
-
-#board .pb-remove:focus-visible{
-  outline: 2px solid rgba(13,110,253,.75) !important;
-  outline-offset: 2px !important;
-}

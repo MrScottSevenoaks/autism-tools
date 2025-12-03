@@ -1,0 +1,181 @@
+{# templates/word_board.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div>
+    <h2 class="h3 mb-1">Word Board</h2>
+    <p class="text-muted mb-0">Tap a tile to speak.</p>
+  </div>
+  <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('dashboard') }}">Back</a>
+</div>
+
+<div class="d-flex gap-2 flex-wrap mb-3">
+  <button id="btnShowAdd" class="btn btn-primary btn-sm" type="button">Add tile</button>
+  <button id="btnRemoveLast" class="btn btn-outline-danger btn-sm" type="button">Remove last</button>
+  <button id="btnReset" class="btn btn-outline-secondary btn-sm" type="button">Reset</button>
+</div>
+
+<div id="addTilePanel" class="card mb-3 d-none">
+  <div class="card-body">
+    <form id="addTileForm" class="row g-2 align-items-end">
+      <div class="col-12 col-md-6">
+        <label class="form-label mb-1" for="tileWord">Word</label>
+        <input id="tileWord" class="form-control" type="text" maxlength="24" autocomplete="off" required>
+      </div>
+
+      <div class="col-8 col-md-4">
+        <label class="form-label mb-1" for="tileIcon">Icon (emoji)</label>
+        <div class="input-group">
+          <input id="tileIcon" class="form-control" type="text" maxlength="8" autocomplete="off" required>
+          <button id="btnEmoji" class="btn btn-outline-secondary" type="button" aria-expanded="false">Pick</button>
+        </div>
+      </div>
+
+      <div class="col-4 col-md-2 d-grid">
+        <button class="btn btn-success" type="submit">Add</button>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end">
+        <button id="btnCancelAdd" class="btn btn-link" type="button">Cancel</button>
+      </div>
+    </form>
+
+    <div id="emojiWrap" class="mt-2 d-none" style="max-width: 420px;">
+      <div class="border rounded p-2">
+        <emoji-picker></emoji-picker>
+      </div>
+      <small class="text-muted d-block mt-1">Click an emoji to fill the icon field.</small>
+    </div>
+  </div>
+</div>
+
+<div id="board"></div>
+
+{# board CSS #}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/picture_board.css') }}">
+
+{# emoji picker (optional but you said you like it) #}
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+
+{# PictureBoard widget #}
+<script src="{{ url_for('static', filename='js/picture_board.js') }}"></script>
+
+<script>
+  const DEFAULT_ITEMS = {{ items | tojson }};
+  const STORAGE_KEY = "word_board_items_v1";
+
+  function makeId() {
+    if (window.crypto?.randomUUID) return crypto.randomUUID();
+    return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2);
+  }
+
+  function ensureIds(arr) {
+    return (Array.isArray(arr) ? arr : []).map(x => ({
+      id: x.id || makeId(),
+      word: (x.word ?? "").toString(),
+      icon: (x.icon ?? "").toString()
+    }));
+  }
+
+  function loadItems() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return ensureIds(DEFAULT_ITEMS);
+      const parsed = JSON.parse(raw);
+      const ok = Array.isArray(parsed) && parsed.every(x => x && typeof x.word === "string" && typeof x.icon === "string");
+      return ensureIds(ok ? parsed : DEFAULT_ITEMS);
+    } catch {
+      return ensureIds(DEFAULT_ITEMS);
+    }
+  }
+
+  function saveItems(items) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }
+
+  // --- Initialise
+  let items = loadItems();
+  saveItems(items); // normalise (add ids) once
+
+  let board = new PictureBoard("#board", items, {
+    lang: "en-GB",
+    editable: true,
+    onItemsChange(nextItems) {
+      items = ensureIds(nextItems);
+      saveItems(items);
+    }
+  });
+
+  function refreshBoard() {
+    board.setItems(items);
+    saveItems(items);
+  }
+
+  // --- Controls
+  const addPanel = document.getElementById("addTilePanel");
+  const addForm = document.getElementById("addTileForm");
+  const tileWord = document.getElementById("tileWord");
+  const tileIcon = document.getElementById("tileIcon");
+  const emojiWrap = document.getElementById("emojiWrap");
+  const emojiBtn = document.getElementById("btnEmoji");
+  const emojiPicker = emojiWrap.querySelector("emoji-picker");
+
+  document.getElementById("btnShowAdd").addEventListener("click", () => {
+    addPanel.classList.remove("d-none");
+    emojiWrap.classList.add("d-none");
+    tileWord.value = "";
+    tileIcon.value = "";
+    tileWord.focus();
+  });
+
+  document.getElementById("btnCancelAdd").addEventListener("click", () => {
+    addPanel.classList.add("d-none");
+    emojiWrap.classList.add("d-none");
+  });
+
+  emojiBtn.addEventListener("click", () => {
+    emojiWrap.classList.toggle("d-none");
+    emojiBtn.setAttribute("aria-expanded", String(!emojiWrap.classList.contains("d-none")));
+  });
+
+  emojiPicker.addEventListener("emoji-click", (event) => {
+    const unicode = event?.detail?.unicode || event?.detail?.emoji?.unicode;
+    if (unicode) {
+      tileIcon.value = unicode;
+      emojiWrap.classList.add("d-none");
+      emojiBtn.setAttribute("aria-expanded", "false");
+      tileWord.focus();
+    }
+  });
+
+  addForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const word = tileWord.value.trim();
+    const icon = tileIcon.value.trim();
+    if (!word || !icon) return;
+
+    // Optional: no duplicate words
+    const exists = items.some(i => i.word.toLowerCase() === word.toLowerCase());
+    if (!exists) {
+      items.push({ id: makeId(), word, icon });
+      refreshBoard();
+    }
+
+    addPanel.classList.add("d-none");
+    emojiWrap.classList.add("d-none");
+  });
+
+  document.getElementById("btnRemoveLast").addEventListener("click", () => {
+    if (items.length === 0) return;
+    items.pop();
+    refreshBoard();
+  });
+
+  document.getElementById("btnReset").addEventListener("click", () => {
+    items = ensureIds(DEFAULT_ITEMS);
+    localStorage.removeItem(STORAGE_KEY);
+    refreshBoard();
+  });
+</script>
+{% endblock %}
