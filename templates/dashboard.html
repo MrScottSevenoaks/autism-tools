@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h2 class="h3 mb-3">Hello, {{ current_user.first_name }}!</h2>
+        <p class="mb-4">
+            From here you can access your tools:
+        </p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <a href="{{ url_for('word_board') }}" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="h5 mb-2">🗣️ Word Board</h3>
+                            <p class="small mb-0">
+                                Build and use a personal word board to support communication.
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="#" class="text-decoration-none">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="h5 mb-2">🍽️ Food Tracking Tool</h3>
+                            <p class="small mb-0">
+                                Log foods and note how they feel, to spot helpful patterns.
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mt-4 mt-lg-0">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h3 class="h6 mb-3">Account</h3>
+                <p class="small mb-3">
+                    You are logged in as <strong>{{ current_user.email }}</strong>.
+                </p>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">
+                    Log out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

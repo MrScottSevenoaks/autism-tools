@@ -1,19 +1,98 @@
-<head>
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+{% extends "base.html" %}
 
-<body>
-    <div class="App">
-        <header class="App-header">
-            <img src="{{ url_for('static', filename='Octocat.png') }}" class="App-logo" alt="logo" />
-            <p>
-                GitHub Codespaces <span class="heart">♥️</span> Flask
-            </p>
-            <p class="small">
-                Edit <code>templates/index.html</code> and refresh to see your changes!
-            </p>
-        </header>
+{% block content %}
+<div class="row align-items-center">
+    <!-- Left: Explanation -->
+    <div class="col-lg-7 mb-4 mb-lg-0">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="h3 mb-3">Welcome to <span class="text-primary">All About Autism</span></h2>
+                <p class="lead">
+                    This site is designed to support autistic people and their families with practical,
+                    everyday tools.
+                </p>
+                <p>
+                    Once you are signed in, you can access two main features. These are designed to be simple,
+                    calm, and focused on what actually helps in daily life.
+                </p>
+
+                <hr class="my-4">
+
+                <h3 class="h5 mb-2">🗣️ Word Board</h3>
+                <p class="mb-3">
+                    The Word Board is a customisable communication board. It allows you to:
+                </p>
+                <ul class="mb-4">
+                    <li>Create and organise words, phrases, or symbols that matter to you.</li>
+                    <li>Support communication when speaking is difficult or overwhelming.</li>
+                    <li>Use a predictable layout that can be reused in different situations.</li>
+                </ul>
+
+                <h3 class="h5 mb-2">🍽️ Food Tracking Tool</h3>
+                <p class="mb-3">
+                    The Food Tracking Tool helps you keep track of what is eaten and how it feels afterwards.
+                    This can be useful for:
+                </p>
+                <ul class="mb-0">
+                    <li>Noticing patterns between foods and mood, behaviour, or comfort.</li>
+                    <li>Supporting conversations with professionals about diet and wellbeing.</li>
+                    <li>Respecting sensory preferences and safe foods over time.</li>
+                </ul>
+            </div>
+        </div>
     </div>
-</body>
 
-</html>
+    <!-- Right: Login -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="h4 mb-3 text-center">Log in</h2>
+                <p class="text-muted small text-center mb-4">
+                    Sign in to access your Word Board and Food Tracking tools.
+                </p>
+
+                <form method="post" action="{{ url_for('login') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.email.label(class="form-label") }}
+                        {{ form.email(class="form-control", placeholder="you@example.com") }}
+                        {% for error in form.email.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control", placeholder="••••••••") }}
+                        {% for error in form.password.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="form-check">
+                            {{ form.remember_me(class="form-check-input", id="remember_me") }}
+                            <label class="form-check-label" for="remember_me">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="{{ url_for('forgot_password') }}" class="small">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+
+                    <p class="text-center small mb-0">
+                        New here?
+                        <a href="{{ url_for('register') }}">Create an account</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

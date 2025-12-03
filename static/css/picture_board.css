@@ -1,0 +1,99 @@
+/* static/css/picture_board.css */
+/* High-specificity rules to prevent Bootstrap/other CSS from overriding layout */
+
+#board{
+  width: 100%;
+}
+
+/* Force a proper multi-column layout */
+#board .pb-grid{
+  width: 100%;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+  gap: 14px !important;
+  align-items: stretch;
+}
+
+/* Tile wrapper provides positioning context for the X */
+#board .pb-tile{
+  position: relative !important;
+  width: 100%;
+}
+
+/* The big clickable face of each tile */
+#board .pb-speak{
+  width: 100% !important;
+  min-height: 120px;
+  padding: 14px 10px 12px;
+
+  display: grid;
+  grid-template-rows: auto auto;
+  justify-items: center;
+  gap: 10px;
+
+  background: #e9e9e9;
+  border: 3px solid #2d2d2d;
+  box-shadow: 5px 5px 0 #111;
+
+  cursor: pointer;
+
+  /* Reset default button chrome across browsers */
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+}
+
+/* Press effect */
+#board .pb-speak:active{
+  transform: translate(1px, 1px);
+  box-shadow: 4px 4px 0 #111;
+}
+
+#board .pb-icon{
+  font-size: 30px;
+  line-height: 1;
+}
+
+#board .pb-label{
+  font-size: 24px;
+  line-height: 1.1;
+  color: #000;
+}
+
+/* The delete X: ACTUAL overlay inside the tile (not in layout flow) */
+#board .pb-remove{
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  z-index: 10 !important;
+
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+
+  display: grid !important;
+  place-items: center !important;
+
+  border-radius: 999px !important;
+  border: 2px solid #2d2d2d !important;
+  background: rgba(255,255,255,0.92) !important;
+
+  font-size: 18px !important;
+  line-height: 1 !important;
+
+  cursor: pointer !important;
+
+  /* Reset default button chrome */
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+}
+
+#board .pb-remove:hover{
+  background: #fff !important;
+}
+
+#board .pb-remove:focus-visible{
+  outline: 2px solid rgba(13,110,253,.75) !important;
+  outline-offset: 2px !important;
+}
